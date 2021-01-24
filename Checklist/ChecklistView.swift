@@ -1,10 +1,11 @@
 // Lucas Haney
 // ID: 2407823
 
-import SwiftUI
 
-// Properties
-// ==========
+// Main View
+// Includes navigation bar items/title, for each loop, move and delete calls and sheet presentation
+
+import SwiftUI
 
 struct ChecklistView: View {
     
@@ -19,21 +20,8 @@ struct ChecklistView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(checklist.items) { checklistItem in
-                    HStack {
-                        Text(checklistItem.name)
-                        Spacer()
-                        Text(checklistItem.isChecked ? "✅" : "🔲")
-                    }
-                    
-                    .background(Color.white)
-                    .onTapGesture {
-                        if let matchingIndex = self.checklist.items.firstIndex(where: {
-                      $0.id == checklistItem.id }) {
-                            self.checklist.items[matchingIndex].isChecked.toggle()
-                        }
-                        self.checklist.printChecklistContents()
-                    }
+                ForEach(checklist.items) { index in
+                    RowView(checklistItem: self.$checklist.items[index])
                 }
                 
                 .onMove(perform: checklist.moveListItem)
@@ -47,13 +35,15 @@ struct ChecklistView: View {
                         Image(systemName: "plus.circle.fill")
                         Text("Add Item")
                     }
-                },
-                trailing: EditButton()
-            )
+                })
             
+            .toolbar{
+                EditButton()
+            }
             .navigationBarTitle("Checklist", displayMode: .inline)
             .onAppear() {
                 self.checklist.printChecklistContents()
+                self.checklist.saveListItems()
             }
         }
         
